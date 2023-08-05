@@ -59,6 +59,7 @@ public class InstallerMain {
 	private static JLabel pathJLabel = new JLabel();
 	private static JFrame insFrame = new JFrame();
 	private static JFrame jFrame = new JFrame();
+	private static JPanel panel1 = new JPanel();
 	
 	private static File toilet = new File(Utils.userpath + "/Toilet");
 	public static boolean toiletExits = false;
@@ -70,14 +71,15 @@ public class InstallerMain {
 	
 	public static Button iButton = new Button("安装");
 	public static Button uButton = new Button("卸载(R)");
-	public static JButton nextButton = new JButton();
-	public static JButton finshButton = new JButton("完成");
+	public static Button nextButton = new Button();
+	public static Button finshButton = new Button("完成");
 	
 	public static JProgressBar progressBar = new JProgressBar();
 	public static JLabel label = new JLabel("状态：安装Jvav");
+	public static JLabel warnLabel = new JLabel("<HTML><font color='red'>警告：如果您无法下载，请<font color='green'>点击这里<HTML>");
 	
 	public static Checkbox toiletCheck = new Checkbox();
-
+	public static JRadioButton useGithub = new JRadioButton("使用Github下载源-慢（默认使用Gitee下载源）");
 	
 	public static void main(String[] args) {
 		try {
@@ -134,7 +136,7 @@ public class InstallerMain {
 		insFrame.getContentPane().add(panel);
 		panel.setLayout(null);
 		
-		toiletCheck.setBounds(17, 14, 134, 23);
+		toiletCheck.setBounds(22, 11, 134, 23);
 		toiletCheck.setIgnoreRepaint(true);
 		toiletCheck.setFocusTraversalKeysEnabled(false);
 		toiletCheck.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -153,18 +155,14 @@ public class InstallerMain {
 		uButton.setBackground(white);
 		panel.add(uButton);
 		
-		JRadioButton coolButton = new JRadioButton("Toilet Story IV ! :P");
-		coolButton.setFont(new Font("微软雅黑", Font.PLAIN, 12));
-		coolButton.setBackground(yellow);
-		coolButton.setBounds(159, 14, 134, 23);
-		panel.add(coolButton);
-		
 		uButton.addActionListener(new ButtonListener());
 		iButton.addActionListener(new ButtonListener());
 		
 		insFrame.setVisible(true);
 	}
-	
+	/**
+	 * @wbp.parser.entryPoint
+	 */
 	public static void targetPage() {
 		jFrame.setTitle(version + " 安装 - 目标Toilet");
 		jFrame.setSize(width, height);
@@ -204,7 +202,8 @@ public class InstallerMain {
 		
 		nextButton.setBounds(547, 10, 123, 27);
 		nextButton.setFont(font);
-		nextButton.setText("下一步>");
+		nextButton.setFocusable(false);
+		nextButton.setLabel("下一步>");
 		nextButton.addActionListener(new ButtonListener());
 		panel.add(nextButton);
 		
@@ -223,6 +222,11 @@ public class InstallerMain {
 		pathJLabel.setFont(new Font("微软雅黑", Font.PLAIN, 12));
 		pathJLabel.setBounds(32, 175, 522, 55);
 		jFrame.getContentPane().add(pathJLabel);
+		
+		useGithub.setFont(new Font("微软雅黑", Font.PLAIN, 12));
+		useGithub.setBounds(33, 264, 278, 23);
+		jFrame.getContentPane().add(useGithub);
+		
 		/*
 		 * Check The Toilet
 		 */
@@ -240,11 +244,13 @@ public class InstallerMain {
 		} else {
 			path = Utils.userpath + "\\Toilet";
 			InstallerMain.pathJLabel.setText("<HTML>安装路径:<br>"
-					+ Utils.userpath + "<font color='red'>\\Toilet" + "</HTML>");
+					+ Utils.userpath + "<font color='red'>\\Toilet"
+							+ "<font color='red'><br>警告！Toilet Not Find" + "</HTML>");
 		}
 		insFrame.dispose();
 		jFrame.setVisible(true);
 	}
+
 	public static void releasePage() {
 		JFrame jFrame1 = new JFrame();
 		jFrame1.setTitle(version + " 安装 - 进度");
@@ -260,19 +266,21 @@ public class InstallerMain {
 		topLogo.setBounds(0, 0, width, 70);
 		jFrame1.getContentPane().add(topLogo);
 		
-		JPanel panel1 = new JPanel();
 		panel1.setBackground(yellow);
 		panel1.setBounds(0, 55, 725, 80);
 		jFrame1.getContentPane().add(panel1);
 		panel1.setLayout(null);
 		
 		label.setFont(new Font("微软雅黑", Font.PLAIN, 13));
-		label.setBounds(24, 20, 136, 25);
+		label.setBounds(24, 20, 202, 25);
 		panel1.add(label);
 		
 		progressBar.setValue(10);
 		progressBar.setBounds(24, 56, 669, 14);
 		panel1.add(progressBar);
+		
+		warnLabel.setBounds(304, 20, 316, 25);
+		panel1.add(warnLabel);
 		
 		panel.setBounds(0, 314, 725, 57);
 		panel.removeAll();
@@ -297,5 +305,11 @@ public class InstallerMain {
 		
 		jFrame.dispose();
 		jFrame1.setVisible(true);
+	}
+	public static void finish() {
+		panel1.remove(warnLabel);
+		progressBar.setValue(100);
+		label.setText("状态： 安装完成！");
+		finshButton.setEnabled(true);
 	}
 }

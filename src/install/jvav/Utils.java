@@ -8,6 +8,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiSystem;
 import javax.sound.midi.MidiUnavailableException;
@@ -25,9 +28,12 @@ public class Utils {
 	public static Image jvavLogo = Toolkit.getDefaultToolkit().getImage(InstallerMain.class.getResource("/install/jvav/jvavlogo-81x162.png"));
 	private static InputStream musicFileInputStream = InstallerMain.class.getResourceAsStream("/install/jvav/ToiletStroyIV.mid");
 	public static String userpath = System.getProperty("user.dir");
-	private static InputStream jvavFiles = Utils.class.getResourceAsStream("/install/jvav/InstallContent.txt");
+	private static InputStream contentFiles = Utils.class.getResourceAsStream("/install/jvav/InstallContent.txt");
 	
 	@SuppressWarnings("finally")
+	/*
+	 * 此方法用于获取Jvav版本
+	 */
 	public static String jvavVersion(){
 		String[] version = null;
 		try {
@@ -44,6 +50,9 @@ public class Utils {
 	}
 	
 	@SuppressWarnings("finally")
+	/*
+	 * 此方法用于获取安装器版本
+	 */
 	public static String installerVersion(){
 		String[] version = null;
 		try {
@@ -80,6 +89,9 @@ public class Utils {
 	public static void tolietNotFind() {
 		throw new ToiletNotFindException("ToiletNotFind");
 	}
+	/*
+	 * Jvav的音乐播放器
+	 */
 	public static Thread ToiletPlayer() {
 		Runnable runnable =()-> {
 			try {
@@ -98,27 +110,49 @@ public class Utils {
 		Thread thread = new Thread(runnable);
 		return thread;
 	}
-	public static void releaseJvav() {
-		File file = new File(InstallerMain.path + "//Jvav");
-		file.mkdir();
-		try {
-			String line = null;
-			InputStreamReader sr = new InputStreamReader(jvavFiles, "UTF-8");
-			BufferedReader br = new BufferedReader(sr);
-			while ((line = br.readLine()) != null) {
-				FileOutputStream outputStream = null;
-				InputStream content = Utils.class.getResourceAsStream("/install/jvav/" + line);
-				byte [] buffer = new byte[content.available()];
-				content.read(buffer);
-				outputStream = new FileOutputStream(InstallerMain.path+"\\Jvav\\" + line);
-				outputStream.write(buffer);
-				outputStream.close();
+	/*
+	 * 此方法用于下载Jvav
+	 */
+	public static void downloadJvav() {
+		Runnable downloadTask =()-> {
+			String source = null;
+			File file = new File(InstallerMain.path + "//Jvav");
+			if (!file.exists() || !file.isDirectory()) {
+				file.mkdir();
 			}
-			InstallerMain.progressBar.setValue(100);
-			InstallerMain.label.setText("状态： 安装完成！");
-			InstallerMain.finshButton.setEnabled(true);
-		} catch (IOException e) {
-			// TODO 自动生成的 catch 块
-		}
+			try {
+				if (!InstallerMain.useGithub.isSelected()) {
+					source = "https://gitee.com/jsxhdgrkj/jvav/releases/download/";
+				} else {
+					source = "https://github.com/Jerbvsjhs/JvavSrc/releases/download/";
+				}
+				String line = null;
+				InputStreamReader sr = new InputStreamReader(contentFiles, "UTF-8");
+				BufferedReader br = new BufferedReader(sr);
+				while ((line = br.readLine()) != null) {
+					FileOutputStream outputStream = new FileOutputStream(InstallerMain.path+"\\Jvav\\" + line);
+					URL url = new URL(source + jvavVersion() + "/" + line);
+					System.out.println(url);
+					URLConnection urlConnection = url.openConnection();
+					InputStream content = urlConnection.getInputStream();
+					byte [] buffer = new byte[content.available()];
+//					content.read(buffer);
+					int read;
+					while ((read = content.read(buffer)) != -1) {
+						//输出从第0个到read个字节数
+						outputStream.write(buffer, 0, read);
+					}
+//					outputStream.write(buffer);
+					outputStream.flush();
+					outputStream.close();
+					System.out.println("ok");
+				}
+				InstallerMain.finish();
+			} catch (IOException e) {
+				// TODO 自动生成的 catch 块
+			}
+		};
+		Thread downloadThread = new Thread(downloadTask);
+		downloadThread.start();
 	}
 }

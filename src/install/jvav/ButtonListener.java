@@ -20,7 +20,7 @@ public class ButtonListener implements ActionListener{
 			} else {
 				Utils.sleep(1000);
 				JOptionPane.showOptionDialog(null,
-						InstallerMain.installerVersion + " 发生了严重错误\n"
+						"Jvav installer " + InstallerMain.installerVersion + " 发生了严重错误\n"
 						+ "发生了什麽事？\n"
 						+ "张浩杨博士规定Jvav只允许安装在Toliet中，否则它将抛出OUT OF TOLIET异常并自动安装迷你世界\n"
 						+ "\n"
@@ -36,7 +36,7 @@ public class ButtonListener implements ActionListener{
 		buttonMap.put(InstallerMain.uButton, ()-> {
 			Utils.sleep(1000);
 			JOptionPane.showOptionDialog(null,
-					InstallerMain.installerVersion + " 发生了严重错误\n"
+					"Jvav installer " + InstallerMain.installerVersion + " 发生了严重错误\n"
 					+ "发生了什麽事？\n"
 					+ "   由于张浩杨博士更新了宇宙最先进的反卸载系统，您将无法通过Jvav卸载程序安全地卸载Jvav。\n"
 					+ " 我可以安全地卸载Jvav吗？\n"
@@ -80,7 +80,7 @@ public class ButtonListener implements ActionListener{
 				}
 			}
 			InstallerMain.releasePage();
-			Utils.releaseJvav();
+			Utils.downloadJvav();
 		});
 		buttonMap.put(InstallerMain.finshButton, ()-> {
 			System.exit(0);
